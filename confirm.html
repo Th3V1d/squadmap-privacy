@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Squadmap — Account Confirmation</title>
+<meta name="description" content="Confirm your Squadmap account.">
+<meta name="robots" content="noindex">
+<style>
+  :root {
+    --sky: #EAF6FF;
+    --sky-top: #5EC8F2;
+    --card: #FDFBF7;
+    --text: #332C28;
+    --muted: #6B645E;
+    --accent: #FF6B4A;
+    --on-accent: #241F1A;
+    --sun: #FFC857;
+    --mountain: #3FA796;
+    --rule: #E2DED8;
+    --danger-bg: #FFF0EC;
+    --danger-border: #E0552E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --sky: #14181C;
+      --sky-top: #3AA0C9;
+      --card: #1E2429;
+      --text: #ECE7E1;
+      --muted: #ADA49A;
+      --accent: #FF7A5C;
+      --on-accent: #241F1A;
+      --sun: #F2B84D;
+      --mountain: #4FC2AE;
+      --rule: #333C43;
+      --danger-bg: #33211A;
+      --danger-border: #C8672A;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.25rem;
+    background: var(--sky);
+    color: var(--text);
+    font: 16px/1.6 ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  main {
+    width: 100%;
+    max-width: 26rem;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,.08);
+    text-align: center;
+  }
+  .badge { width: 84px; height: 84px; margin: 0 auto 1.25rem; display: block; }
+  h1 { font-size: 1.5rem; margin: 0 0 .5rem; letter-spacing: -.01em; }
+  p.detail { color: var(--muted); font-size: .98rem; margin: 0 0 1.5rem; }
+  .error-box {
+    display: none;
+    background: var(--danger-bg);
+    border-left: 3px solid var(--danger-border);
+    border-radius: 0 10px 10px 0;
+    padding: .75rem 1rem;
+    margin: 0 0 1.5rem;
+    font-size: .9rem;
+    color: var(--text);
+    text-align: left;
+  }
+  a.cta {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    padding: .85rem 2rem;
+    border-radius: 999px;
+  }
+  .hint { margin-top: 1.25rem; font-size: .85rem; color: var(--muted); }
+  footer { margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: .82rem; }
+  [data-view] { display: none; }
+  body[data-state="success"] [data-view="success"],
+  body[data-state="error"] [data-view="error"],
+  body[data-state="idle"] [data-view="idle"] { display: block; }
+</style>
+</head>
+<body data-state="idle">
+<main>
+
+  <svg class="badge" viewBox="0 0 200 200" role="img" aria-label="Squadmap">
+    <defs>
+      <linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--sky-top)"/>
+        <stop offset="100%" stop-color="var(--sky)"/>
+      </linearGradient>
+      <clipPath id="badgeClip">
+        <circle cx="100" cy="100" r="86"/>
+      </clipPath>
+    </defs>
+    <circle cx="100" cy="100" r="92" fill="none" stroke="var(--accent)" stroke-width="6"/>
+    <g clip-path="url(#badgeClip)">
+      <circle cx="100" cy="100" r="86" fill="url(#skyGradient)"/>
+      <circle cx="137" cy="61" r="16" fill="var(--sun)"/>
+      <path d="M8,159 L59,118 L100,147 L149,110 L192,155 L192,200 L8,200 Z" fill="var(--mountain)"/>
+    </g>
+    <path d="M100,21 A79,79 0 0,1 175,76" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-dasharray="1 6" opacity=".7" stroke-linecap="round"/>
+  </svg>
+
+  <div data-view="success">
+    <h1>You're verified 🎉</h1>
+    <p class="detail">Your Squadmap account is confirmed. Tap below to jump back into the app.</p>
+    <a class="cta" id="open-link" href="squadmap://confirm-email">Open Squadmap</a>
+    <p class="hint">If nothing happens automatically, the button above will do it.</p>
+  </div>
+
+  <div data-view="error">
+    <h1>That link didn't work</h1>
+    <p class="detail">We couldn't confirm your account from this link — it may have expired or already been used.</p>
+    <div class="error-box" id="error-box">
+      <span id="error-detail"></span>
+    </div>
+    <p class="detail" style="margin-bottom:0;">Open Squadmap and try signing up again to get a fresh confirmation email.</p>
+  </div>
+
+  <div data-view="idle">
+    <h1>Squadmap</h1>
+    <p class="detail">This page confirms Squadmap account verification links. If you're seeing this without tapping a link from your email, there's nothing to do here.</p>
+  </div>
+
+  <footer>Squadmap</footer>
+</main>
+
+<script>
+  (function () {
+    var query = new URLSearchParams(window.location.search);
+    var hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    function get(key) { return query.get(key) || hash.get(key); }
+
+    var code = get("code");
+    var error = get("error") || get("error_code");
+    var errorDescription = get("error_description");
+    var deepLink = "squadmap://confirm-email" + window.location.search + window.location.hash;
+
+    if (code) {
+      document.body.setAttribute("data-state", "success");
+      document.getElementById("open-link").href = deepLink;
+      window.location.href = deepLink;
+    } else if (error) {
+      document.body.setAttribute("data-state", "error");
+      if (errorDescription) {
+        document.getElementById("error-box").style.display = "block";
+        document.getElementById("error-detail").textContent =
+          decodeURIComponent(errorDescription.replace(/\+/g, " "));
+      }
+    } else {
+      document.body.setAttribute("data-state", "idle");
+    }
+  })();
+</script>
+</body>
+</html>
